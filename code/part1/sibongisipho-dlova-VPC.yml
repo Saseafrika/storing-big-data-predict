@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: 2023-11-13
+
+Description:
+  This template deploys a VPC with a public subnet across a single Availability Zone.
+  The subnet is configured with the associated default public route table. The VPC has associated 
+  security groups that control remote access to the VPC, ssh access to the file server hosted
+  in the VPC and to the file gateway.
+
+Parameters:
+  EnvironmentName:
+    Description: A string that will be prefixed onto each resource created in the template.
+    Type: String
+    Default: DE-Extract
+  
+  VpcCIDR:
+    Description: The IPv4 address space for the VPC hosting the scenario challenge.
+    Type: String
+    Default: 192.168.0.0/16
+
+  DataCenterPublicSubnetCIDR:
+    Description: The IPv4 address space for the publicly accessible portion of the VPC.
+    Type: String
+    Default: 192.168.10.0/24
+
+Resources:
+  DESIBDLO-VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+  
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref DESIBDLO-VPC
+  
+  DataCenterPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DESIBDLO-VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref DataCenterPublicSubnetCIDR
+      MapPublicIPOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Data Center Subnet
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref DESIBDLO-VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Routes
+  
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  DataCenterPublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref DataCenterPublicSubnet
+
+ WindowsInstanceSG:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      CidrIp: 0.0.0.0/0
+      GroupName: DE-Extract-WindowsInstanceSG
+      GroupDescription: This group permits RDP access to an instance deployed within the public subnet of the VPC.
+      FromPort: 3389
+      VpcId: !Ref DESIBDLO-VPC
+      Tag:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-WindowsInstanceSG
+  
+  FileServerSG:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      CidrIp: 192.168.10.0/24
+      GroupName: DE-Extract-FileServerSG
+      GroupDescription: This security group is responsible for permitting ssh access to the data center's file server from an internal source within the VPC.
+      FromPort: 22
+      VpcId: !Ref DESIBDLO-VPC
+      Tag:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-FileServerSG
+
+   FileGatewaySG:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      CidrIp: 192.168.0.0/16
+      GroupName: DE-Extract-FileGatewaySG
+      GroupDescription: This security group is responsible for permitting ssh access to the data center's file server from an internal source within the VPC.
+      FromPort: 0
+      VpcId: !Ref DESIBDLO-VPC
+      ToPort: 65534
+      Tag:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-FileGatewaySG
+Outputs:
+  DESIBDLO-VPC:
+    Description: A refererence to the created VPC
+    Value: !Ref DESIBDLO-VPC
+
+   DataCenterPublicSubnet:
+    Description: A reference to the public subnet in the 1st AZ
+    Value: !Ref  DataCenterPublicSubnet
+
+  WindowsInstanceSG:
+    Description: A reference to the Windows security group with ingress rules
+    Value: !Ref WindowsInstanceSG
+
+ FileServerSG:
+    Description: A reference to the File Server security group with ingress rules
+    Value: !Ref FileServerSG
+
+ FileGatewaySG:
+    Description: A reference to the File Gateway security group with ingress rules
+    Value: !Ref FileGatewaySG
+
+  

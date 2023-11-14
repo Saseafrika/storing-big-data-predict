@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: 2023-11-14
+
+Description:
+
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 key pair to enable ssh access to the Windows instance
+    Type: AWS::EC2::KeyPair::KeyName
+  
+  VPC:
+    Description: VPC to deploy resources into.
+    Type: 'AWS::EC2::VPC::Id'
+  
+  Subnet:
+    Description: Subnet to deploy resources into.
+    Type: 'AWS::EC2::Subnet::Id'
+
+  SecurityGroupIds:
+    Description: Specify the security group/s for resources.
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+  
+  LatestWindowsAmiId:
+    Description: A string-based resource path representing the latest Windows Amazon Machine Image (AMI) that should be used to create the remove instance
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: /aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base
+
+Resources:
+
+Outputs:
