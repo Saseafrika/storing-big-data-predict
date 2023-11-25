@@ -109,13 +109,13 @@ Outputs:
     Description: A reference to the public subnet in the 1st AZ
     Value: !Ref  DataCenterPublicSubnet
   WindowsInstanceSG:
-    Description: A reference to the Windows security group with ingress rules
+    Description: A reference to the Windows security group with no ingress rules
     Value: !Ref WindowsInstanceSG
   FileServerSG:
-    Description: A reference to the File Server security group with ingress rules
+    Description: A reference to the File Server security group with no ingress rules
     Value: !Ref FileServerSG
   FileGatewaySG:
-    Description: A reference to the File Gateway security group with ingress rules
+    Description: A reference to the File Gateway security group with no ingress rules
     Value: !Ref FileGatewaySG
 
   
