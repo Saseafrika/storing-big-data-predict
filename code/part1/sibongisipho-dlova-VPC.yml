@@ -73,8 +73,8 @@ Resources:
       GroupName: DE-Extract-WindowsInstanceSG
       GroupDescription: This group permits RDP access to an instance deployed within the public subnet of the VPC.
       IpProtocol: tcp
-      FromPort: '1'
-      ToPort: '65534'
+      FromPort: 1
+      ToPort: 65534
       CidrIp: 192.168.0.0/16
       VpcId: !Ref DESIBDLO-VPC
       Tag:
@@ -86,8 +86,8 @@ Resources:
       GroupName: DE-Extract-FileServerSG
       GroupDescription: This security group is responsible for permitting ssh access to the data center's file server from an internal source within the VPC.
       IpProtocol: tcp
-      FromPort: '1'
-      ToPort: '65534'
+      FromPort: 1
+      ToPort: 65534
       CidrIp: 192.168.0.0/16
       VpcId: !Ref DESIBDLO-VPC
       Tag:
@@ -99,8 +99,8 @@ Resources:
       GroupName: DE-Extract-FileGatewaySG
       GroupDescription: This security group is responsible for permitting ssh access to the data center's file server from an internal source within the VPC.
       IpProtocol: tcp
-      FromPort: '1'
-      ToPort: '65534'
+      FromPort: 1
+      ToPort: 65534
       CidrIp: 192.168.0.0/16
       VpcId: !Ref DESIBDLO-VPC
       Tag:
