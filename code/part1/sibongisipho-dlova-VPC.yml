@@ -18,7 +18,7 @@ Parameters:
     Type: String
     Default: 192.168.10.0/24
 Resources:
-  DESIBDLO-VPC:
+  DETEAM05-VPC:
     Type: 'AWS::EC2::VPC'
     Properties:
       CidrBlock: !Ref VpcCIDR
@@ -37,11 +37,11 @@ Resources:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref DESIBDLO-VPC
+      VpcId: !Ref DETEAM05-VPC
   DataCenterPublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref DESIBDLO-VPC
+      VpcId: !Ref DETEAM05-VPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: !Ref DataCenterPublicSubnetCIDR
       MapPublicIPOnLaunch: true
@@ -51,7 +51,7 @@ Resources:
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref DESIBDLO-VPC
+      VpcId: !Ref DETEAM05-VPC
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Public Routes
@@ -76,7 +76,7 @@ Resources:
       FromPort: 1
       ToPort: 65534
       CidrIp: 192.168.0.0/16
-      VpcId: !Ref DESIBDLO-VPC
+      VpcId: !Ref DETEAM05-VPC
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-WindowsInstanceSG
@@ -89,7 +89,7 @@ Resources:
       FromPort: 1
       ToPort: 65534
       CidrIp: 192.168.0.0/16
-      VpcId: !Ref DESIBDLO-VPC
+      VpcId: !Ref DETEAM05-VPC
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-FileServerSG
@@ -102,14 +102,14 @@ Resources:
       FromPort: 1
       ToPort: 65534
       CidrIp: 192.168.0.0/16
-      VpcId: !Ref DESIBDLO-VPC
+      VpcId: !Ref DETEAM05-VPC
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-FileGatewaySG
 Outputs:
-  DESIBDLO-VPC:
+  DETEAM05-VPC:
     Description: A reference to the created VPC
-    Value: !Ref DESIBDLO-VPC
+    Value: !Ref DETEAM05-VPC
   DataCenterPublicSubnet:
     Description: A reference to the public subnet in the 1st AZ
     Value: !Ref  DataCenterPublicSubnet
