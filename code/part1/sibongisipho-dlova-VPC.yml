@@ -18,7 +18,7 @@ Parameters:
     Type: String
     Default: 192.168.10.0/24
 Resources:
-  DETEAM05-VPC:
+  DETEAM05VPC:
     Type: 'AWS::EC2::VPC'
     Properties:
       CidrBlock: !Ref VpcCIDR
@@ -28,20 +28,20 @@ Resources:
         - Key: Name
           Value: !Ref EnvironmentName
   InternetGateway:
-    Type: AWS::EC2::InternetGateway
+    Type: 'AWS::EC2::InternetGateway'
     Properties:
       Tags:
         - Key: Name
           Value: !Ref EnvironmentName
   InternetGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
+    Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
       InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref DETEAM05-VPC
+      VpcId: !Ref DETEAM05VPC
   DataCenterPublicSubnet:
-    Type: AWS::EC2::Subnet
+    Type: 'AWS::EC2::Subnet'
     Properties:
-      VpcId: !Ref DETEAM05-VPC
+      VpcId: !Ref DETEAM05VPC
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: !Ref DataCenterPublicSubnetCIDR
       MapPublicIPOnLaunch: true
@@ -49,26 +49,26 @@ Resources:
         - Key: Name
           Value: !Sub ${EnvironmentName} Data Center Subnet
   PublicRouteTable:
-    Type: AWS::EC2::RouteTable
+    Type: 'AWS::EC2::RouteTable'
     Properties:
-      VpcId: !Ref DETEAM05-VPC
+      VpcId: !Ref DETEAM05VPC
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Public Routes
   DefaultPublicRoute:
-    Type: AWS::EC2::Route
+    Type: 'AWS::EC2::Route'
     DependsOn: InternetGatewayAttachment
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
   DataCenterPublicSubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref DataCenterPublicSubnet
   WindowsInstanceSG:
-    Type: AWS::EC2::SecurityGroup
+    Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupName: DE-Extract-WindowsInstanceSG
       GroupDescription: This group permits RDP access to an instance deployed within the public subnet of the VPC.
@@ -76,12 +76,12 @@ Resources:
       FromPort: 1
       ToPort: 65534
       CidrIp: 192.168.0.0/16
-      VpcId: !Ref DETEAM05-VPC
+      VpcId: !Ref DETEAM05VPC
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-WindowsInstanceSG
   FileServerSG:
-    Type: AWS::EC2::SecurityGroup
+    Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupName: DE-Extract-FileServerSG
       GroupDescription: This security group is responsible for permitting ssh access to the data center's file server from an internal source within the VPC.
@@ -89,12 +89,12 @@ Resources:
       FromPort: 1
       ToPort: 65534
       CidrIp: 192.168.0.0/16
-      VpcId: !Ref DETEAM05-VPC
+      VpcId: !Ref DETEAM05VPC
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-FileServerSG
   FileGatewaySG:
-    Type: AWS::EC2::SecurityGroup
+    Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupName: DE-Extract-FileGatewaySG
       GroupDescription: This security group is responsible for permitting ssh access to the data center's file server from an internal source within the VPC.
@@ -102,14 +102,14 @@ Resources:
       FromPort: 1
       ToPort: 65534
       CidrIp: 192.168.0.0/16
-      VpcId: !Ref DETEAM05-VPC
+      VpcId: !Ref DETEAM05VPC
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-FileGatewaySG
 Outputs:
-  DETEAM05-VPC:
+  DETEAM05VPC:
     Description: A reference to the created VPC
-    Value: !Ref DETEAM05-VPC
+    Value: !Ref DETEAM05VPC
   DataCenterPublicSubnet:
     Description: A reference to the public subnet in the 1st AZ
     Value: !Ref  DataCenterPublicSubnet
