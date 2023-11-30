@@ -19,6 +19,7 @@ import boto3
 from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 from decimal import Decimal
+import json
 
 
 def get_current_time(second_delta):
@@ -168,11 +169,14 @@ def lambda_handler(event, context):
     # Put records into the Firehose stream
     firehose_client = boto3.client('firehose')
     try:
+        data = batch
 
-        # ===================== STUDENT INPUT REQUIRED ======================================
-        # Write code as part of Step 6 to push the generated `batch` list above to 
-        # the firehose stream
-        # ===================================================================================
+        response = firehose_client.put_record(
+            DeliveryStreamName = 'DESIBDLO-deliverystream',
+            Record = {
+                'Data': '\n'.join([json.dumps(dict) for dict in data])
+            }
+        )
 
         pass
 
