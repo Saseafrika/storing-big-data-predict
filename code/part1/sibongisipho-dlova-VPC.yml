@@ -1,9 +1,4 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description:
-  This template deploys a VPC with a public subnet across a single Availability Zone.
-  The subnet is configured with the associated default public route table. The VPC has associated 
-  security groups that control remote access to the VPC, ssh access to the file server and file gateway hosted
-  in the VPC.
 Parameters:
   EnvironmentName:
     Description: A string that will be prefixed onto each resource created in the template.
@@ -70,39 +65,36 @@ Resources:
   WindowsInstanceSG:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupName: DE-Extract-WindowsInstanceSG
-      GroupDescription: This group permits RDP access to an instance deployed within the public subnet of the VPC.
-      IpProtocol: tcp
-      FromPort: 1
-      ToPort: 65534
-      CidrIp: 192.168.0.0/16
       VpcId: !Ref DETEAM05VPC
+      SecurityGroupIngress:
+        IpProtocol: tcp
+        FromPort: 1
+        ToPort: 65534
+        CidrIp: 192.168.0.0/16
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-WindowsInstanceSG
   FileServerSG:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupName: DE-Extract-FileServerSG
-      GroupDescription: This security group is responsible for permitting ssh access to the data center's file server from an internal source within the VPC.
-      IpProtocol: tcp
-      FromPort: 1
-      ToPort: 65534
-      CidrIp: 192.168.0.0/16
       VpcId: !Ref DETEAM05VPC
+      SecurityGroupIngress:
+        IpProtocol: tcp
+        FromPort: 1
+        ToPort: 65534
+        CidrIp: 192.168.0.0/16
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-FileServerSG
   FileGatewaySG:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupName: DE-Extract-FileGatewaySG
-      GroupDescription: This security group is responsible for permitting ssh access to the data center's file server from an internal source within the VPC.
-      IpProtocol: tcp
-      FromPort: 1
-      ToPort: 65534
-      CidrIp: 192.168.0.0/16
       VpcId: !Ref DETEAM05VPC
+      SecurityGroupIngress:
+        IpProtocol: tcp
+        FromPort: 1
+        ToPort: 65534
+        CidrIp: 192.168.0.0/16
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-FileGatewaySG
