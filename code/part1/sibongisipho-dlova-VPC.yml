@@ -66,11 +66,12 @@ Resources:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       VpcId: !Ref DETEAM05VPC
-      SecurityGroupIngress:
-        IpProtocol: tcp
-        FromPort: 1
-        ToPort: 65534
-        CidrIp: 192.168.0.0/16
+      GroupName: "DE-Extract-WindowsInstanceSG"
+      Description: "Allows RDP access to an instance in the public subnet of the VPC"
+      IpProtocol: tcp
+      FromPort: 3389
+      ToPort: 3389
+      CidrIp: 0.0.0.0/0
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-WindowsInstanceSG
@@ -78,11 +79,12 @@ Resources:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       VpcId: !Ref DETEAM05VPC
-      SecurityGroupIngress:
-        IpProtocol: tcp
-        FromPort: 1
-        ToPort: 65534
-        CidrIp: 192.168.0.0/16
+      GroupName: "DE-Extract-FileServerSG"
+      Description: "Allows ssh access to the data in the file server"
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 192.168.10.0/24
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-FileServerSG
@@ -90,20 +92,21 @@ Resources:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       VpcId: !Ref DETEAM05VPC
-      SecurityGroupIngress:
-        IpProtocol: tcp
-        FromPort: 1
-        ToPort: 65534
-        CidrIp: 192.168.0.0/16
+      GroupName: "DE-Extract-FileGatewaySG"
+      Description: "Controls access to the file gateway instance"
+      IpProtocol: tcp
+      FromPort: 1
+      ToPort: 65534
+      CidrIp: 192.168.0.0/16
       Tag:
         - Key: Name
           Value: !Sub ${EnvironmentName}-FileGatewaySG
 Outputs:
   DETEAM05VPC:
-    Description: A reference to the created VPC
+    Description: "A reference to the created VPC"
     Value: !Ref DETEAM05VPC
   DataCenterPublicSubnet:
-    Description: A reference to the public subnet in the 1st AZ
+    Description: "A reference to the public subnet in the 1st AZ"
     Value: !Ref  DataCenterPublicSubnet
 
   
